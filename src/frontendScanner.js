@@ -88,8 +88,4 @@ function scanFrontend(frontendDir) {
   return calls;
 }
 
-// Quick manual test
-const result = scanFrontend("./test-fixtures");
-console.log(result);
-
 module.exports = scanFrontend;

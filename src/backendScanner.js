@@ -51,8 +51,4 @@ function scanBackend(backendDir) {
   return routes;
 }
 
-// Quick manual test — scan the test-fixtures folder
-const result = scanBackend("./test-fixtures");
-console.log(result);
-
 module.exports = scanBackend;
