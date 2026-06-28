@@ -58,7 +58,7 @@ function scanFrontend(frontendDir) {
           const firstArg = callPath.node.arguments[0];
           const extractedPath = firstArg ? extractPath(firstArg) : null;
 
-          if (extractedPath) {
+          if (extractedPath && !extractedPath.startsWith("http")) {
             calls.push({
               method: method.toUpperCase(),
               path: extractedPath,
@@ -72,7 +72,7 @@ function scanFrontend(frontendDir) {
           const firstArg = callPath.node.arguments[0];
           const extractedPath = firstArg ? extractPath(firstArg) : null;
 
-          if (extractedPath) {
+          if (extractedPath && !extractedPath.startsWith("http")) {
             calls.push({
               method: "GET",
               path: extractedPath,
