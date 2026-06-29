@@ -13,7 +13,7 @@ function callGoogleMaps() {
   fetch(`https://maps.googleapis.com/maps/api/geocode/json?key=${apiKey}`);
 }
 
-// Not an external API — should be ignored
+// Not an external Api— should be ignored
 function callOwnBackend() {
   axios.get("/users");
 }
