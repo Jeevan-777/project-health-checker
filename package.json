@@ -4,6 +4,9 @@
   "description": " \"CLI tool that statically analyzes full-stack JS projects for route mismatches, dependency issues, and env var drift\"",
   "license": "ISC",
   "author": "Jeevan B M",
+  "bin": {
+    "project-health-check": "./bin/cli.js"
+  },
   "type": "commonjs",
   "main": "index.js",
   "scripts": {

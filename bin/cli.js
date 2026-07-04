@@ -2,6 +2,7 @@
 
 const { Command } = require("commander");
 const path = require("path");
+const fs = require("fs");
 
 const scanBackend = require("../src/backendScanner");
 const scanFrontend = require("../src/frontendScanner");
@@ -18,20 +19,42 @@ program
   .description(
     "Statically analyzes a full-stack JS project for route drift, dependency drift, env var drift, and hardcoded secrets",
   )
-  .option("-b, --backend <path>", "path to backend folder", "./routes")
-  .option("-f, --frontend <path>", "path to frontend folder", "./src")
   .option(
-    "-p, --project <path>",
-    "root path of the project (used for package.json and .env)",
-    ".",
+    "-b, --backend <path>",
+    "path to backend folder (auto-detected if not set)",
   )
+  .option(
+    "-f, --frontend <path>",
+    "path to frontend folder (auto-detected if not set)",
+  )
+  .option("-p, --project <path>", "root path of the project", ".")
   .parse(process.argv);
 
 const options = program.opts();
-
-const backendDir = path.resolve(options.project, options.backend);
-const frontendDir = path.resolve(options.project, options.frontend);
 const projectDir = path.resolve(options.project);
+
+// Auto-detect folder if flag not provided
+function detectDir(provided, candidates) {
+  if (provided) return path.resolve(provided);
+  for (const candidate of candidates) {
+    const full = path.join(projectDir, candidate);
+    if (fs.existsSync(full)) return full;
+  }
+  return projectDir; // fallback to root
+}
+
+const backendDir = detectDir(options.backend, [
+  "routes",
+  "api",
+  "server",
+  "backend",
+]);
+const frontendDir = detectDir(options.frontend, [
+  "src",
+  "client",
+  "frontend",
+  "app",
+]);
 
 // Run all scanners
 const backendRoutes = scanBackend(backendDir);
@@ -41,10 +64,8 @@ const routeIssues = diffRoutes(backendRoutes, frontendCalls);
 const depIssues = scanDependencies(projectDir);
 const envIssues = scanEnvUsage(projectDir);
 
-// External API scanner should check both backend and frontend folders
 const apiFindingsBackend = scanExternalApis(backendDir);
 const apiFindingsFrontend = scanExternalApis(frontendDir);
 const apiFindings = [...apiFindingsBackend, ...apiFindingsFrontend];
 
-// Print the unified report
 printReport({ routeIssues, depIssues, envIssues, apiFindings });
